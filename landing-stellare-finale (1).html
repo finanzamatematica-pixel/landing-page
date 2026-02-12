@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metodo Matematico Automatico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        .stars-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: -1;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 40px;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 6vw, 56px);
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(20px, 4vw, 28px);
+            color: #e5e7eb;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .hero .subtitle strong {
+            color: #22c55e;
+            font-weight: 800;
+        }
+
+        /* Guarantee Badge */
+        .guarantee-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+            border: 2px solid #22c55e;
+            border-radius: 50px;
+            padding: 20px 40px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3);
+        }
+
+        .guarantee-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #22c55e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .guarantee-text {
+            font-size: 16px;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        /* Video Section */
+        .video-wrapper {
+            max-width: 450px;
+            margin: 50px auto;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.78%; /* 9:16 ratio */
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 0 0 1px rgba(34, 197, 94, 0.3),
+                0 20px 60px rgba(0,0,0,0.5),
+                0 0 100px rgba(34, 197, 94, 0.2);
+        }
+
+        .video-container iframe,
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 800;
+            text-decoration: none;
+            padding: 22px 60px;
+            border-radius: 50px;
+            box-shadow: 
+                0 0 30px rgba(34, 197, 94, 0.5),
+                0 10px 40px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            min-width: 350px;
+        }
+
+        .cta-button.disabled {
+            background: linear-gradient(135deg, #374151, #1f2937);
+            cursor: not-allowed;
+            box-shadow: 
+                0 0 20px rgba(107, 114, 128, 0.3),
+                0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-button .cta-main-text {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .timer-text {
+            display: block;
+            font-size: 32px;
+            margin-top: 8px;
+            color: #fbbf24;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+            font-family: 'Courier New', monospace;
+        }
+
+        .urgency {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #ef4444;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            padding: 80px 20px;
+            background: linear-gradient(180deg, transparent 0%, rgba(34, 197, 94, 0.05) 100%);
+        }
+
+        .reviews-title {
+            text-align: center;
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 60px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Screenshots Grid */
+        .screenshots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .screenshot-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 
+                0 0 30px rgba(34, 197, 94, 0.3),
+                0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .screenshot-image {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        .screenshot-placeholder {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+            border: 2px dashed rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #22c55e;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(34, 197, 94, 0.2);
+            color: #9ca3af;
+            padding: 50px 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .footer p {
+            margin-bottom: 15px;
+        }
+
+        .footer a {
+            color: #22c55e;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #10b981;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 15px 30px;
+            }
+
+            .cta-button {
+                font-size: 20px;
+                padding: 20px 50px;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Stars Background -->
+    <div class="stars-background">
+        <div class="stars"></div>
+    </div>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>L'Unico Metodo Matematico <span class="highlight">Automatico e GRATIS</span></h1>
+            
+            <p class="subtitle">Che oltre <strong>800 persone</strong> stanno usando</p>
+            <p class="subtitle">per fare fino a <strong>2.000€ al mese</strong></p>
+            
+            <p class="subtitle" style="font-size: 24px; margin-top: 20px;">SENZA RISCHI</p>
+
+            <div class="guarantee-badge">
+                <div class="guarantee-title">🛡️ Garanzia Totale Sul Capitale</div>
+                <div class="guarantee-text">Se perdi ti rimborsiamo TUTTO fino all'ultimo centesimo</div>
+            </div>
+        </section>
+
+        <!-- First CTA (before video) -->
+        <div class="cta-section">
+            <a href="https://t.me/+ei8PmxNt1G4zOGRk" class="cta-button disabled" id="cta-top" target="_blank">
+                <span class="cta-main-text">🔒 INIZIA ORA</span>
+                <span class="timer-text" id="timer-top">1:30</span>
+            </a>
+        </div>
+
+        <!-- Video Section -->
+        <div class="video-wrapper">
+            <div class="video-container">
+                <iframe 
+                    src="YOUR_VIDEO_URL_HERE" 
+                    allow="autoplay; fullscreen; picture-in-picture" 
+                    allowfullscreen
+                    title="Metodo Matematico Video">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <a href="https://t.me/+ei8PmxNt1G4zOGRk" class="cta-button disabled" id="cta-bottom" target="_blank">
+                <span class="cta-main-text">🔒 INIZIA ORA</span>
+                <span class="timer-text" id="timer-bottom">1:30</span>
+            </a>
+            <p class="urgency">🔥 Solo 15 posti disponibili questo mese</p>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <div class="container">
+            <h2 class="reviews-title">Risultati Reali dei Nostri Clienti</h2>
+            
+            <div class="screenshots-grid">
+                <!-- Screenshot 1 -->
+                <div class="screenshot-card">
+                    <!-- Replace src with your actual screenshot -->
+                    <!-- <img src="screenshot1.jpg" alt="Risultato Cliente 1" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 1<br>Inserisci qui
+                    </div>
+                </div>
+
+                <!-- Screenshot 2 -->
+                <div class="screenshot-card">
+                    <!-- <img src="screenshot2.jpg" alt="Risultato Cliente 2" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 2<br>Inserisci qui
+                    </div>
+                </div>
+
+                <!-- Screenshot 3 -->
+                <div class="screenshot-card">
+                    <!-- <img src="screenshot3.jpg" alt="Risultato Cliente 3" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 3<br>Inserisci qui
+                    </div>
+                </div>
+
+                <!-- Screenshot 4 -->
+                <div class="screenshot-card">
+                    <!-- <img src="screenshot4.jpg" alt="Risultato Cliente 4" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 4<br>Inserisci qui
+                    </div>
+                </div>
+
+                <!-- Screenshot 5 -->
+                <div class="screenshot-card">
+                    <!-- <img src="screenshot5.jpg" alt="Risultato Cliente 5" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 5<br>Inserisci qui
+                    </div>
+                </div>
+
+                <!-- Screenshot 6 -->
+                <div class="screenshot-card">
+                    <!-- <img src="screenshot6.jpg" alt="Risultato Cliente 6" class="screenshot-image"> -->
+                    <div class="screenshot-placeholder">
+                        📸<br>Screenshot 6<br>Inserisci qui
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <div class="container">
+        <div class="cta-section" style="padding: 60px 20px;">
+            <a href="https://t.me/+ei8PmxNt1G4zOGRk" class="cta-button disabled" id="cta-final" target="_blank">
+                <span class="cta-main-text">🔒 INIZIA ORA</span>
+                <span class="timer-text" id="timer-final">1:30</span>
+            </a>
+            <p class="urgency">⏰ Ultimi 15 posti - Video offline tra poche ore</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Finanza Matematica. Tutti i diritti riservati.</p>
+        <p>Questo non è un consiglio finanziario. I risultati passati non garantiscono risultati futuri.</p>
+        <p style="margin-top: 20px;">
+            <a href="#">Privacy Policy</a> | <a href="#">Termini e Condizioni</a>
+        </p>
+    </footer>
+
+    <script>
+        // Create stars
+        function createStars() {
+            const starsContainer = document.querySelector('.stars');
+            const numberOfStars = 100;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        createStars();
+
+        // Timer functionality for CTAs (1 minute 30 seconds = 90 seconds)
+        let timeLeft = 90;
+        
+        const ctaButtons = {
+            top: document.getElementById('cta-top'),
+            bottom: document.getElementById('cta-bottom'),
+            final: document.getElementById('cta-final')
+        };
+        
+        const timers = {
+            top: document.getElementById('timer-top'),
+            bottom: document.getElementById('timer-bottom'),
+            final: document.getElementById('timer-final')
+        };
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update all timer displays
+            Object.values(timers).forEach(timer => {
+                if (timer) timer.textContent = timeString;
+            });
+            
+            if (timeLeft === 0) {
+                // Enable all CTAs
+                Object.entries(ctaButtons).forEach(([key, button]) => {
+                    if (button) {
+                        button.classList.remove('disabled');
+                        // Telegram link is already in HTML, no need to change href
+                        
+                        // Change text to INIZIA ORA with unlock
+                        const mainText = button.querySelector('.cta-main-text');
+                        if (mainText) {
+                            mainText.textContent = '🔓 INIZIA ORA';
+                        }
+                        
+                        // Hide timer
+                        const timerElement = button.querySelector('.timer-text');
+                        if (timerElement) {
+                            timerElement.style.display = 'none';
+                        }
+                    }
+                });
+                
+                clearInterval(timerInterval);
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        // Start timer
+        const timerInterval = setInterval(updateTimer, 1000);
+        updateTimer(); // Initial call
+
+        // Prevent clicks on disabled buttons
+        Object.values(ctaButtons).forEach(button => {
+            if (button) {
+                button.addEventListener('click', function(e) {
+                    if (this.classList.contains('disabled')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
